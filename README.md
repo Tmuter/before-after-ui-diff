@@ -6,7 +6,7 @@
 
 > **Before/after screenshot diffing for humans.** Capture two states of a page, pixel-diff them, and get a single self-contained HTML report you walk to sign off each change.
 
-![before-after-ui-diff before/after review report — title, toolbar, a changed-row with before/after slider and a Before/After/Diff strip](https://raw.githubusercontent.com/Tmuter/before-after-ui-diff/main/examples/demo.png)
+![before-after-ui-diff before/after review report — title, toolbar, a red-frame legend, and a changed-row with a before/after slider and a Before/After/Diff strip, the element under review ringed in red](https://raw.githubusercontent.com/Tmuter/before-after-ui-diff/main/examples/demo.png)
 
 **The Crimson Gnome** is the picky reviewer that sits between "the change is done" and "ship it." After you (or an AI coding agent) make a batch of UI edits, point it at a list of changes and it produces **one portable `.html`**: a before/after slider, a pixel-diff column, auto-pass for rows that didn't actually move, and per-row decision + notes you tick off while reviewing.
 
