@@ -184,7 +184,7 @@ const reportTitle = manifest.title || S.reportTitle;
 // auto-frame rule in cdp-batch.mjs (on when a row clips to `sel` and framing isn't
 // disabled; an explicit outline/outlinetext always frames).
 const framesPresent = (manifest.rows || []).some((r) =>
-  r.outline || r.outlinetext ||
+  r.outline || r.outlinetext || typeof r.frame === 'string' ||
   (r.frame !== false && manifest.capture?.frame !== false && !!r.sel));
 
 const html = `<!doctype html><html lang="${esc(lang)}"><head><meta charset="utf-8">

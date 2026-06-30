@@ -18,7 +18,7 @@
  *   --hide=".foo{visibility:hidden!important}"  extra CSS appended to the deterministic-render prelude
  *   --outline="#sel"             frame matching element(s) with an outline (drawn OUTSIDE the box → no obscuring)
  *   --outlinetext="After how..."  frame the PARENT of the tightest element whose text includes this
- *   --frame                      draw a red frame around the --sel element (faithful: no border-radius)
+ *   --frame[=sel]                draw a red frame around an element (default: the --sel element; faithful: no border-radius)
  *
  * A shot showing the login screen = the dedicated profile isn't logged in yet —
  * run cdp-launch.sh and log in once in that window.
@@ -27,14 +27,16 @@ import { writeFileSync } from 'node:fs';
 
 const PORT = process.env.CDP_PORT || 9333;
 const [, , url, out, ...rest] = process.argv;
-if (!url || !out) { console.error('Usage: node cdp-shot.mjs <url> <out.png> [--w= --h= --scale= --wait= --full|--viewport --theme= --themeKeys= --seed=k=v --hideDevOverlays[=false] --clicktext= --sel= --readySel= --hide= --outline= --outlinetext= --frame]'); process.exit(1); }
+if (!url || !out) { console.error('Usage: node cdp-shot.mjs <url> <out.png> [--w= --h= --scale= --wait= --full|--viewport --theme= --themeKeys= --seed=k=v --hideDevOverlays[=false] --clicktext= --sel= --readySel= --hide= --outline= --outlinetext= --frame[=sel]]'); process.exit(1); }
 const opt = (k, d) => { const a = rest.find((x) => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : d; };
 const W = +opt('w', 1440), H = +opt('h', 900), SCALE = +opt('scale', 2), WAIT = +opt('wait', 500);
 const FULL = !rest.includes('--viewport');
 const THEME = opt('theme', null), CLICKTEXT = opt('clicktext', null), SEL = opt('sel', null);
 const READYSEL = opt('readySel', null), HIDE = opt('hide', '');
 const OUTLINE = opt('outline', null), OUTLINETEXT = opt('outlinetext', null);
-const FRAME = rest.includes('--frame'); // draw a red frame around the --sel element (faithful: no border-radius)
+const FRAMEARG = opt('frame', null); // --frame=<sel> rings that element; bare --frame rings --sel
+const FRAME = FRAMEARG !== null || rest.includes('--frame');
+const FRAMESEL = FRAMEARG || SEL; // element to ring with a faithful red box (no border-radius)
 // Which localStorage keys get the --theme value. Generic defaults — many apps
 // read one of these; override with --themeKeys for an app-specific key.
 const THEME_KEYS = opt('themeKeys', 'theme,color-theme,ui-theme').split(',').map((s) => s.trim()).filter(Boolean);
@@ -142,17 +144,21 @@ try {
     await sleep(300);
   }
 
-  if (FRAME && SEL) {
-    // Frame the --sel element itself (faithful: no border-radius mutation). Sits in
-    // the +8px sel-clip margin so it stays visible even on a clipped shot.
+  if (FRAME && FRAMESEL) {
+    // Ring the changed element with a red box (faithful: no border-radius mutation).
+    // When ringing the --sel element itself, the clip below pads for context so the
+    // frame doesn't fill the crop; a distinct --frame=<sel> rings inside a wider --sel.
     const FRAMECSS = `(s)=>{s.style.setProperty('outline','3px solid #f43f5e','important');s.style.setProperty('outline-offset','4px','important');}`;
-    await evalJs(`(()=>{const f=${FRAMECSS};const e=document.querySelector(${JSON.stringify(SEL)});if(e){f(e);return true;}return false;})()`);
+    await evalJs(`(()=>{const f=${FRAMECSS};const e=document.querySelector(${JSON.stringify(FRAMESEL)});if(e){f(e);return true;}return false;})()`);
     await sleep(150);
   }
 
   let clip;
   if (SEL) {
-    clip = await evalJs(`(()=>{const e=document.querySelector(${JSON.stringify(SEL)});if(!e)return null;const r=e.getBoundingClientRect();if(r.width<1||r.height<1)return null;return {x:Math.max(0,Math.floor(r.left+scrollX-8)),y:Math.max(0,Math.floor(r.top+scrollY-8)),width:Math.ceil(r.width+16),height:Math.ceil(r.height+16),scale:1};})()`);
+    // Ringing the very element we clip to → pad generously so the frame sits in context
+    // instead of hugging the crop edges; otherwise an 8px crop.
+    const ringSelf = FRAME && FRAMESEL === SEL;
+    clip = await evalJs(`(()=>{const e=document.querySelector(${JSON.stringify(SEL)});if(!e)return null;const r=e.getBoundingClientRect();if(r.width<1||r.height<1)return null;const pad=${ringSelf ? 'Math.max(56,Math.round(0.5*Math.max(r.width,r.height)))' : '8'};return {x:Math.max(0,Math.floor(r.left+scrollX-pad)),y:Math.max(0,Math.floor(r.top+scrollY-pad)),width:Math.ceil(r.width+pad*2),height:Math.ceil(r.height+pad*2),scale:1};})()`);
     // Fail fast: a missing --sel must error, not silently fall back to full-page —
     // a silent full-page shot would produce a noisy, misleading diff.
     if (!clip) throw new Error(`selector not found or empty: ${SEL}`);

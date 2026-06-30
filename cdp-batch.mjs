@@ -281,18 +281,22 @@ async function capture(job) {
     }
 
     if (job.frame) {
-      // Auto-frame the element under review (its own `sel`) so the report visibly
-      // points at what changed. Same red outline on BOTH before+after with identical
-      // geometry → the frame itself is never flagged as a diff.
+      // Ring the changed element with a red frame so the report points at what changed.
+      // `job.frame` is a selector — either the row's own `sel` (auto-frame; the clip is
+      // padded below to keep it in context) or a distinct element to ring inside a wider
+      // `sel`. Same outline on BOTH before+after, identical geometry → never a false diff.
       await evalJs(page.sessionId, `(()=>{const f=${FRAME};const e=document.querySelector(${JSON.stringify(job.frame)});if(e){f(e);return true;}return false;})()`);
       await sleep(150);
     }
 
     let clip;
     if (job.sel) {
-      // 8px pad around the element box; fail fast (don't silently full-page) so a
-      // stale selector surfaces instead of producing a misleading diff.
-      clip = await evalJs(page.sessionId, `(()=>{const e=document.querySelector(${JSON.stringify(job.sel)});if(!e)return null;const r=e.getBoundingClientRect();if(r.width<1||r.height<1)return null;return {x:Math.max(0,Math.floor(r.left+scrollX-8)),y:Math.max(0,Math.floor(r.top+scrollY-8)),width:Math.ceil(r.width+16),height:Math.ceil(r.height+16),scale:1};})()`);
+      // Pad around the element box; fail fast (don't silently full-page) so a stale
+      // selector surfaces instead of producing a misleading diff. When we ring the VERY
+      // element we clip to (auto-frame), pad generously so the red frame sits in context
+      // instead of hugging the crop edges — otherwise the ring fills the whole shot.
+      const ringSelf = job.frame && job.frame === job.sel;
+      clip = await evalJs(page.sessionId, `(()=>{const e=document.querySelector(${JSON.stringify(job.sel)});if(!e)return null;const r=e.getBoundingClientRect();if(r.width<1||r.height<1)return null;const pad=${ringSelf ? 'Math.max(56,Math.round(0.5*Math.max(r.width,r.height)))' : '8'};return {x:Math.max(0,Math.floor(r.left+scrollX-pad)),y:Math.max(0,Math.floor(r.top+scrollY-pad)),width:Math.ceil(r.width+pad*2),height:Math.ceil(r.height+pad*2),scale:1};})()`);
       if (!clip) throw new Error(`selector not found or empty: ${job.sel}`);
     }
 
@@ -317,12 +321,13 @@ async function capture(job) {
 // each job is self-describing inside the pool.
 const jobs = [];
 for (const row of manifest.rows || []) {
-  // Auto-frame the element under review by default: when the row clips to `sel` and
-  // framing isn't disabled (row.frame===false, or capture.frame===false globally),
-  // draw a red frame around that element on both shots. An explicit outline/
-  // outlinetext wins — the user is deliberately framing another element for context.
-  const frameOn = row.frame !== false && baseCapture.frame !== false;
-  const frameSel = frameOn && row.sel && !row.outline && !row.outlinetext ? row.sel : null;
+  // Red frame around the changed element. `row.frame` may be a SELECTOR (ring that
+  // element — typically a small element inside a wider `sel` context clip) or a boolean.
+  // Default (frame !== false, not globally disabled): auto-ring the row's own `sel` (the
+  // clip then pads for context). An explicit outline/outlinetext wins.
+  const frameStr = typeof row.frame === 'string' ? row.frame : null;
+  const frameAuto = row.frame !== false && baseCapture.frame !== false && row.sel && !row.outline && !row.outlinetext;
+  const frameSel = frameStr || (frameAuto ? row.sel : null);
   for (const kind of ['before', 'after']) {
     if (!row[`${kind}Url`] || !row[kind]) continue;
     jobs.push({
