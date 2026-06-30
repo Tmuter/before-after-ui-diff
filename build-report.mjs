@@ -18,11 +18,11 @@
  *   "rows": [
  *     { "id": "a1", "title": "Save button restyled",
  *       "where": "/settings → Profile",
- *       "before": ".crimson-gnome/a1-before.png",       // path | null
- *       "after":  ".crimson-gnome/a1-after.png",         // path | null
- *       "diff":   ".crimson-gnome/a1-diff.png",          // optional, filled by diff-images.mjs
+ *       "before": ".ui-diff/a1-before.png",       // path | null
+ *       "after":  ".ui-diff/a1-after.png",         // path | null
+ *       "diff":   ".ui-diff/a1-diff.png",          // optional, filled by diff-images.mjs
  *       "diffStats": { "pct": 0.41, "pass": false, "bbox": {…} },  // optional, from diff-images.mjs
- *       "suggestedSelector": "[data-crimson-gnome=\"save-button\"]", // optional, auto-detected
+ *       "suggestedSelector": "[data-ui-diff=\"save-button\"]", // optional, auto-detected
  *       "note":   "needs a logged-in session" }    // optional, pre-filled, read-only ℹ️ context
  *   ]
  * }
@@ -279,7 +279,7 @@ ${rowsHtml}
 <script>
 // Namespace by manifest.id (fallback title) so distinct reports never collide
 // in localStorage even when their titles match.
-const NS=${JSON.stringify('crimson-gnome:' + (manifest.id || manifest.title || 'report'))};
+const NS=${JSON.stringify('ui-diff:' + (manifest.id || manifest.title || 'report'))};
 const TITLE=${JSON.stringify(reportTitle)};
 const RID=${JSON.stringify(manifest.id || manifest.title || 'report')};
 const ROWS=${JSON.stringify(ROWS)};

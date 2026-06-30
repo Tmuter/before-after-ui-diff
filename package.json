@@ -1,10 +1,11 @@
 {
-  "name": "the-crimson-gnome",
+  "name": "before-after-ui-diff",
   "version": "0.1.0",
   "description": "Before/after screenshot diffing for humans — capture two states of a page, pixel-diff them, and get a self-contained HTML report you walk to sign off each change.",
   "type": "module",
   "bin": {
-    "crimson-gnome": "verify-ui.mjs"
+    "before-after-ui-diff": "verify-ui.mjs",
+    "ui-diff": "verify-ui.mjs"
   },
   "scripts": {
     "test": "node --test \"test/*.test.mjs\""
@@ -38,10 +39,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Tmuter/the-crimson-gnome.git"
+    "url": "git+https://github.com/Tmuter/before-after-ui-diff.git"
   },
-  "homepage": "https://github.com/Tmuter/the-crimson-gnome#readme",
+  "homepage": "https://github.com/Tmuter/before-after-ui-diff#readme",
   "bugs": {
-    "url": "https://github.com/Tmuter/the-crimson-gnome/issues"
+    "url": "https://github.com/Tmuter/before-after-ui-diff/issues"
   }
 }

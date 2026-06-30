@@ -1,5 +1,5 @@
-# the-crimson-gnome working dir (manifests, screenshots, generated reports — local only)
-.crimson-gnome/
+# before-after-ui-diff working dir (manifests, screenshots, generated reports — local only)
+.ui-diff/
 
 # deps
 node_modules/

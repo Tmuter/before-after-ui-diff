@@ -1,12 +1,12 @@
-# The Crimson Gnome
+# before-after-ui-diff
 
-[![CI](https://github.com/Tmuter/the-crimson-gnome/actions/workflows/ci.yml/badge.svg)](https://github.com/Tmuter/the-crimson-gnome/actions/workflows/ci.yml)
+[![CI](https://github.com/Tmuter/before-after-ui-diff/actions/workflows/ci.yml/badge.svg)](https://github.com/Tmuter/before-after-ui-diff/actions/workflows/ci.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![node](https://img.shields.io/badge/node-%E2%89%A522.4-brightgreen.svg)](https://nodejs.org)
 
 > **Before/after screenshot diffing for humans.** Capture two states of a page, pixel-diff them, and get a single self-contained HTML report you walk to sign off each change.
 
-![the-crimson-gnome before/after review report — title, toolbar, a changed-row with before/after slider and a Before/After/Diff strip](https://raw.githubusercontent.com/Tmuter/the-crimson-gnome/main/examples/demo.png)
+![before-after-ui-diff before/after review report — title, toolbar, a changed-row with before/after slider and a Before/After/Diff strip](https://raw.githubusercontent.com/Tmuter/before-after-ui-diff/main/examples/demo.png)
 
 **The Crimson Gnome** is the picky reviewer that sits between "the change is done" and "ship it." After you (or an AI coding agent) make a batch of UI edits, point it at a list of changes and it produces **one portable `.html`**: a before/after slider, a pixel-diff column, auto-pass for rows that didn't actually move, and per-row decision + notes you tick off while reviewing.
 
@@ -36,13 +36,13 @@ It is **not** an assertion-based snapshot suite. Playwright/Percy fail CI when p
 **As a Claude Code skill (recommended).** Clone it into a skills directory — it then auto-triggers when you ask for a "before/after report", no command needed:
 
 ```bash
-git clone https://github.com/Tmuter/the-crimson-gnome ~/.claude/skills/the-crimson-gnome
-cd ~/.claude/skills/the-crimson-gnome && npm install   # pixelmatch + pngjs, for the diff step
+git clone https://github.com/Tmuter/before-after-ui-diff ~/.claude/skills/before-after-ui-diff
+cd ~/.claude/skills/before-after-ui-diff && npm install   # pixelmatch + pngjs, for the diff step
 ```
 
 Use a project's `.claude/skills/` instead of `~/.claude/skills/` to scope it to one repo.
 
-**Standalone / as a dependency.** `npm i the-crimson-gnome` then `npx crimson-gnome <manifest>`, or clone anywhere and run the scripts directly.
+**Standalone / as a dependency.** `npm i before-after-ui-diff` then `npx before-after-ui-diff <manifest>` (or the short `ui-diff` alias after a global install), or clone anywhere and run the scripts directly.
 
 ---
 
@@ -60,7 +60,7 @@ node build-report.mjs examples/sample.json /tmp/report.html
 open /tmp/report.html   # macOS · use xdg-open on Linux
 ```
 
-(Installed as an npm dep instead? Prefix the script paths with `node_modules/the-crimson-gnome/`.)
+(Installed as an npm dep instead? Prefix the script paths with `node_modules/before-after-ui-diff/`.)
 
 ---
 
@@ -78,7 +78,7 @@ node verify-ui.mjs my-review.json        # capture → diff → suggest → repo
 # 3. Open my-review.html and review.
 ```
 
-`verify-ui.mjs` (also exposed as the `crimson-gnome` bin) captures every row's before/after in parallel, pixel-diffs each pair, auto-passes the unchanged ones, tries to point at the changed element, and renders the report.
+`verify-ui.mjs` (also exposed as the `before-after-ui-diff` / `ui-diff` bin) captures every row's before/after in parallel, pixel-diffs each pair, auto-passes the unchanged ones, tries to point at the changed element, and renders the report.
 
 ---
 
@@ -98,9 +98,9 @@ One row per **user-perceived** change (not per file). You author `title`/`where`
       "where": "/settings → Profile",
       "beforeUrl": "http://localhost:3001/settings",
       "afterUrl":  "http://localhost:3000/settings",
-      "before": ".crimson-gnome/a1-before.png",
-      "after":  ".crimson-gnome/a1-after.png",
-      "sel": "[data-crimson-gnome='save-button']",
+      "before": ".ui-diff/a1-before.png",
+      "after":  ".ui-diff/a1-after.png",
+      "sel": "[data-ui-diff='save-button']",
       "note": "needs a logged-in session"
     }
   ]
@@ -120,7 +120,7 @@ One row per **user-perceived** change (not per file). You author `title`/`where`
 | `clicktext` / `outline` / `outlinetext` / `hide` | capture helpers (open a disclosure, frame an element, hide a selector). |
 | `note` | read-only ℹ️ context line you show the reviewer (a caveat). Not their input field. |
 
-**Tip:** add a stable hook (`data-crimson-gnome="save-button"`) to the changed component and clip to it (`sel: "[data-crimson-gnome='save-button']"`). Clipped diffs are far quieter than full-page (layout shifts, sticky headers, and dynamic timestamps all flip pixels).
+**Tip:** add a stable hook (`data-ui-diff="save-button"`) to the changed component and clip to it (`sel: "[data-ui-diff='save-button']"`). Clipped diffs are far quieter than full-page (layout shifts, sticky headers, and dynamic timestamps all flip pixels).
 
 ### Capture options (`capture` / `row.capture`)
 
@@ -130,7 +130,7 @@ One row per **user-perceived** change (not per file). You author `title`/`where`
 
 ## Security ⚠️
 
-- **The generated `.html` embeds full-resolution screenshots of whatever your logged-in browser rendered.** It can contain PII, customer data, or secrets that were on screen. **Treat the report as sensitive — never paste it into a public issue or share it casually.** The working dir `.crimson-gnome/` is git-ignored by default for this reason.
+- **The generated `.html` embeds full-resolution screenshots of whatever your logged-in browser rendered.** It can contain PII, customer data, or secrets that were on screen. **Treat the report as sensitive — never paste it into a public issue or share it casually.** The working dir `.ui-diff/` is git-ignored by default for this reason.
 - The capture browser uses a **dedicated profile** logged into your test/account, and its DevTools port is bound to **loopback only** (`127.0.0.1`) with a single scoped allowed-origin. **Don't widen it** (no `--remote-allow-origins=*`): any page that can reach the port could otherwise drive that browser and read its session cookies.
 
 ---
@@ -143,9 +143,9 @@ One row per **user-perceived** change (not per file). You author `title`/`where`
 | `CDP_CONCURRENCY` | `4` | parallel capture tabs |
 | `DIFF_CONCURRENCY` | `4` | parallel diff jobs |
 | `PIXELMATCH_THRESHOLD` | `0.1` | per-pixel colour tolerance (0–1) |
-| `CRIMSON_GNOME_PASS_PCT` | `0.02` | % changed pixels at/below which a row auto-passes |
+| `UI_DIFF_PASS_PCT` | `0.02` | % changed pixels at/below which a row auto-passes |
 | `CHROME_BIN` | — | explicit Chrome/Chromium path (skips auto-detection) |
-| `CRIMSON_GNOME_PROFILE` | `~/.crimson-gnome-cap-profile` | capture browser profile dir |
+| `UI_DIFF_PROFILE` | `~/.ui-diff-cap-profile` | capture browser profile dir |
 
 ---
 

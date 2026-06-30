@@ -1,6 +1,6 @@
 #!/bin/bash
 # Launch a DEDICATED Chrome/Chromium instance with remote debugging + its own
-# profile, so the-crimson-gnome can screenshot pages via CDP (Page.captureScreenshot)
+# profile, so before-after-ui-diff can screenshot pages via CDP (Page.captureScreenshot)
 # WITHOUT bringing any tab to the OS foreground — works in the background, even
 # while you use your normal browser. The profile persists, so you log in ONCE.
 #
@@ -12,13 +12,13 @@
 #
 # Env overrides:
 #   CDP_PORT          debugging port (default 9333)
-#   CRIMSON_GNOME_PROFILE   profile dir   (default ~/.crimson-gnome-cap-profile)
+#   UI_DIFF_PROFILE   profile dir   (default ~/.ui-diff-cap-profile)
 #   CHROME_BIN        explicit path to the Chrome/Chromium binary (skips detection)
 #
 # Needs a DESKTOP SESSION for the one-time interactive login — the full pipeline
 # is not designed to run fully headless.
 PORT="${CDP_PORT:-9333}"
-PROFILE="${CRIMSON_GNOME_PROFILE:-$HOME/.crimson-gnome-cap-profile}"
+PROFILE="${UI_DIFF_PROFILE:-$HOME/.ui-diff-cap-profile}"
 
 # Resolve a Chrome/Chromium binary: explicit CHROME_BIN first, then per-OS
 # well-known paths, then PATH lookups. Cross-platform (macOS + Linux; on Windows
