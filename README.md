@@ -2,6 +2,8 @@
 
 > **Before/after screenshot diffing for humans.** Capture two states of a page, pixel-diff them, and get a single self-contained HTML report you walk to sign off each change.
 
+![nitpicker before/after review report — title, toolbar, a changed-row with before/after slider and a Before/After/Diff strip](https://raw.githubusercontent.com/Tmuter/nitpicker/main/examples/demo.png)
+
 `nitpicker` is the picky reviewer that sits between "the change is done" and "ship it." After you (or an AI coding agent) make a batch of UI edits, point it at a list of changes and it produces **one portable `.html`**: a before/after slider, a pixel-diff column, auto-pass for rows that didn't actually move, and per-row decision + notes you tick off while reviewing.
 
 It is **not** an assertion-based snapshot suite. Playwright/Percy fail CI when pixels change. nitpicker is the opposite: a human-in-the-loop review aid that *shows* you what changed and lets *you* decide.
