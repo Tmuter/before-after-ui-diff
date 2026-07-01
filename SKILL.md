@@ -1,6 +1,6 @@
 ---
 name: before-after-ui-diff
-description: After a batch of 2+ distinct user-facing UI changes, produce a before/after verification report the user ticks off while reviewing locally. Invoke on request ('before/after report', 'verification table', 'crimson-gnome this') or proactively whenever a finished change set touches ≥2 distinct UI surfaces/behaviors. Captures before+after screenshots in parallel, pixel-diffs each row, auto-passes unchanged rows, and renders a self-contained report with a before/after slider, per-row decision + notes, and JSON export.
+description: After a batch of 2+ user-facing UI changes, produce a before/after verification report to sign off each change while reviewing locally. Invoke on request ('before/after report', 'verification table', 'screenshot diff') or proactively when a finished change set touches ≥2 distinct UI surfaces/behaviors. Captures before+after screenshots, pixel-diffs each row, and renders a self-contained HTML report.
 ---
 
 # before-after-ui-diff — the Crimson Gnome's before/after UI review report

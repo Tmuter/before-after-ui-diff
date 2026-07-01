@@ -1,7 +1,7 @@
 {
   "name": "before-after-ui-diff",
   "version": "0.1.0",
-  "description": "Before/after screenshot diffing for humans — capture two states of a page, pixel-diff them, and get a self-contained HTML report you walk to sign off each change.",
+  "description": "Before/after screenshot diffing — pixel-diff two states of a page into one self-contained HTML review report.",
   "type": "module",
   "bin": {
     "before-after-ui-diff": "verify-ui.mjs",

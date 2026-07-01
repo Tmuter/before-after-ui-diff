@@ -4,7 +4,7 @@
 [![license: MIT](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 [![node](https://img.shields.io/badge/node-%E2%89%A522.4-brightgreen.svg)](https://nodejs.org)
 
-> **Before/after screenshot diffing for humans.** Capture two states of a page, pixel-diff them, and get a single self-contained HTML report you walk to sign off each change.
+> **Before/after screenshot diffing.** Capture before/after states of a page, pixel-diff them, and get one self-contained HTML report to sign off each UI change.
 
 ![before-after-ui-diff before/after review report — title, toolbar, a red-frame legend, and a changed-row with a before/after slider and a Before/After/Diff strip, the element under review ringed in red](https://raw.githubusercontent.com/Tmuter/before-after-ui-diff/main/examples/demo.png)
 
