@@ -1,6 +1,6 @@
-# Contributing to The Crimson Gnome
+# Contributing to before-after-ui-diff
 
-Thanks for helping! The Crimson Gnome is deliberately small. A few constraints keep it that way.
+Thanks for helping! This tool is deliberately small. A few constraints keep it that way.
 
 ## The one rule: stay (almost) dependency-free
 
